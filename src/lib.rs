@@ -659,7 +659,13 @@ impl HttpClient for DefaultClient {
         &self,
         req: Request<Body>,
     ) -> Pin<Box<dyn Future<Output = hyper::Result<Response<Body>>> + Send>> {
-        Box::pin(self.0.request(req))
+        log::trace!("{req:?}");
+        let fut = self.0.request(req);
+        Box::pin(async move {
+            let ret = fut.await;
+            log::trace!("{ret:?}");
+            ret
+        })
     }
 }
 
@@ -696,7 +702,13 @@ where
         &self,
         req: Request<Body>,
     ) -> Pin<Box<dyn Future<Output = hyper::Result<Response<Body>>> + Send>> {
-        Box::pin(<hyper::Client<C>>::request(self, req))
+        log::trace!("{req:?}");
+        let fut = <hyper::Client<C>>::request(self, req);
+        Box::pin(async move {
+            let ret = fut.await;
+            log::trace!("{ret:?}");
+            ret
+        })
     }
 }
 
